@@ -15,7 +15,7 @@ void ExecutorService::addExecutor() {
         this->_availableExecutors.push(executor);
     });
     _availableExecutors.push(executor);
-    _executros.push(executor);
+    _executros.push_back(executor);
 }
 
 void ExecutorService::addExecutor(std::chrono::milliseconds timeout) {
@@ -25,5 +25,5 @@ void ExecutorService::addExecutor(std::chrono::milliseconds timeout) {
         this->_availableExecutors.push(executor);
     });
     _availableExecutors.push(executor);
-    _executros.push(executor);
+    _executros.push_back(executor);
 }
