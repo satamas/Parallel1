@@ -12,16 +12,18 @@ void ExecutorService::addExecutor() {
     Executor * executor = new Executor();
     executor->onExecutionComplete([this](Executor * executor){
         std::unique_lock<std::mutex> lck(queueMutex);
-        this->_executors.push(executor);
+        this->_availableExecutors.push(executor);
     });
-    _executors.push(executor);
+    _availableExecutors.push(executor);
+    _executros.push(executor);
 }
 
 void ExecutorService::addExecutor(std::chrono::milliseconds timeout) {
     Executor * executor = new Executor(timeout);
     executor->onExecutionComplete([this](Executor * executor){
         std::unique_lock<std::mutex> lck(queueMutex);
-        this->_executors.push(executor);
+        this->_availableExecutors.push(executor);
     });
-    _executors.push(executor);
+    _availableExecutors.push(executor);
+    _executros.push(executor);
 }

@@ -44,6 +44,10 @@ public:
     bool isCanceled() override{
         return _callable->canceled;
     }
+
+    ~FutureTask(){
+        delete _callable;
+    }
 private:
     std::condition_variable _doneCV;
     std::mutex _resultMutex;

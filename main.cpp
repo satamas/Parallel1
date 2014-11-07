@@ -1,6 +1,7 @@
 #include <iostream>
 #include <future>
 #include <map>
+#include <signal.h>
 #include "Executor.h"
 #include "ExecutorService.h"
 
@@ -28,11 +29,27 @@ private:
     int _time;
 };
 
+bool terminated;
+void my_handler(int s){
+    if(s == SIGTERM) {
+        terminated = true;
+        exit(1);
+    }
+}
+
+
 int main() {
     int id = 0;
     std::map<int, Future<int> *> tasks;
     ExecutorService executorService(1, std::chrono::milliseconds(500));
-    while(true){
+
+    struct sigaction sigTermHandler;
+    sigTermHandler.sa_handler = my_handler;
+    sigemptyset(&sigTermHandler.sa_mask);
+    sigTermHandler.sa_flags = 0;
+    sigaction(SIGTERM, &sigTermHandler, NULL);
+
+    while(!terminated){
         std::string command;
         std::cin >> command;
         if(command == "add"){
@@ -45,8 +62,10 @@ int main() {
             int taskId;
             std::cin >> taskId;
             tasks[taskId]->cancel();
-        } else if(command == "q"){
-            exit(0);
         }
+    }
+
+    for(auto it = tasks.begin(); it != tasks.end(); ++it){
+        it->second->cancel();
     }
 }

@@ -9,4 +9,8 @@ public:
     virtual bool isCanceled() = 0;
 
     virtual bool isDone() = 0;
+
+    virtual ~Future(){
+
+    };
 };

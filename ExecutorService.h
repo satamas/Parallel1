@@ -14,20 +14,28 @@ public:
         FutureTask<T> * task = new FutureTask<T>(callable);
 
         std::unique_lock<std::mutex> lck(queueMutex);
-        while (!_executors.empty() && _executors.front()->isDead()) _executors.pop();
+        while (!_availableExecutors.empty() && _availableExecutors.front()->isDead()) _availableExecutors.pop();
 
-        if(_executors.empty()) addExecutor(_timeout);
+        if(_availableExecutors.empty()) addExecutor(_timeout);
 
-        Executor * _executor = _executors.front();
-        _executors.pop();
+        Executor * _executor = _availableExecutors.front();
+        _availableExecutors.pop();
         _executor->exec(task);
 
         return task;
+    }
+
+    ~ExecutorService(){
+        for(auto executor : _executros){
+            delete executor;
+        }
     }
 private:
     void addExecutor();
     void addExecutor(std::chrono::milliseconds timeout);
     std::mutex queueMutex;
     std::chrono::milliseconds _timeout;
-    std::queue<Executor *> _executors;
+    std::queue<Executor *> _availableExecutors;
+    std::vector<Executor *> _executros;
+
 };
